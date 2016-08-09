@@ -1,0 +1,37 @@
+{
+  "name": "option.ts",
+  "version": "0.0.1",
+  "description": "Option ~Monad for typescript, focus is on simplicity and typesafety",
+  "main": "lib/option",
+  "typings": "lib/option.d.ts",
+
+  "scripts": {
+    "build": "tsc option.ts --outDir ./lib --declaration --noImplicitAny --strictNullChecks",
+    "test": "npm run build && mocha --ui tdd",
+    "prepublish": "npm run build"
+  },
+
+  "files": [
+    "lib"
+  ],
+
+  "devDependencies": {
+    "typescript": "beta",
+    "mocha": "3.0.2",
+    "better-assert": "1.0.1"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AlexGalays/option.ts.git"
+  },
+  "keywords": [
+    "option",
+    "monad",
+    "maybe",
+    "typescript"
+  ],
+  "author": "AlexGalays",
+  "homepage": "https://github.com/AlexGalays/option.ts",
+  "license": "MIT"
+}
