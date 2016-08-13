@@ -112,22 +112,22 @@ suite('option.ts', () => {
   // orElse
 
   test('Some.orElse Some', () => {
-    const some = Option(10).orElse(Option(20))
+    const some = Option(10).orElse(() => Option(20))
     assert(some.isDefined() && some() === 10)
   })
 
   test('Some.orElse None', () => {
-    const some = Option(10).orElse(None)
+    const some = Option(10).orElse(() => None)
     assert(some.isDefined() && some() === 10)
   })
 
   test('None.orElse Some', () => {
-    const some = Option(undefined).orElse(Option(20))
+    const some = Option(undefined).orElse(() => Option(20))
     assert(some.isDefined() && some() === 20)
   })
 
   test('None.orElse None', () => {
-    const none = Option(undefined).orElse(None)
+    const none = Option(undefined).orElse(() => None)
     assert(!none.isDefined() && none() === undefined)
   })
 

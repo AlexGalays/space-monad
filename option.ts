@@ -24,14 +24,14 @@ export interface OptionOps<A> {
 
   /**
    * If this Option is a Some and the predicate returns true, keep that Some.
-   * in all other cases, return None.
+   * In all other cases, return None.
    */
   filter(fn: (a: A) => boolean): Option<A>
 
   /**
    * Returns this Option unless it's a None, in which case the provided alternative is returned
    */
-  orElse(alternative: Option<A>): Option<A>
+  orElse(alternative: () => Option<A>): Option<A>
 
   toString(): string
 }
@@ -58,7 +58,7 @@ export interface OptionObject {
   <T>(value: T): Option<T>
 
   /**
-   * Creates a new Option holding the computation of the passed Options if they were all Some or defined instances,
+   * Creates a new Option holding the computation of the passed Options if they were all Some or plain defined instances,
    * else returns None
    */
   all<T1, T2, TR>(t1: T1 | Option<T1>, t2: T2 | Option<T2>,
@@ -104,7 +104,7 @@ function makeNone() {
   self.map = returnNone
   self.flatMap = returnNone
   self.filter = returnNone
-  self.orElse = identity
+  self.orElse = (alt: Function) => alt()
   self.toString = () => 'None'
   self.toJSON = () => null
 
@@ -135,7 +135,6 @@ function isDef(value: any) {
   return value !== null && value !== undefined
 }
 
-function identity(x: any) { return x }
 function returnNone() { return None }
 function returnTrue() { return true }
 function returnFalse() { return false }
