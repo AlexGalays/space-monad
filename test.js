@@ -96,15 +96,15 @@ suite('option.ts', () => {
   })
 
 
-  // getOrElse equivalent
+  // getOrElse
 
   test('Some getOrElse', () => {
-    const result = Option(10)() || 20
-    assert(result === 10)
+    const result = Option('').getOrElse('alt')
+    assert(result === '')
   })
 
   test('None getOrElse', () => {
-    const result = Option(undefined)() || 20
+    const result = Option(undefined).getOrElse(20)
     assert(result === 20)
   })
 
@@ -183,6 +183,17 @@ suite('option.ts', () => {
   test('None toJSON', () => {
     const obj = JSON.parse(JSON.stringify({ x: Option(undefined) }))
     assert(obj.x === null)
+  })
+
+
+  // Perfs
+
+  test('Measure the time needed to create a Some', () => {
+    for (let i = 0; i < 10; i++) {
+      console.time(`Creating a Some (${i})`)
+      Option(i)
+      console.timeEnd(`Creating a Some (${i})`)
+    }
   })
 
 })

@@ -17,7 +17,7 @@ The advantage of only using it there, is that you keep neat, non wrapped JSON st
 * [orElse](#orElse)
 * [Reading the Option value](#Reading the Option value)
 * [isDefined](#isDefined)
-* [??? getOrElse](#getOrElse)
+* [getOrElse](#getOrElse)
 
 
 
@@ -129,6 +129,12 @@ const value = Option(33)()
 Returns whether this Option has a defined value (i.e, it's a Some(value))
 
 <a name="getOrElse"></a>
-#### ??? getOrElse
+#### getOrElse
 
-There is no `getOrElse` because it's equivalent to `myOption() || alternative` which has the advantage of not eagerly computing the alternative.
+Returns this Option's value if it's a Some, else return the provided alternative
+
+```ts
+const value = Option(undefined).getOrElse(33)
+
+// value === 33
+```

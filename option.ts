@@ -33,6 +33,11 @@ export interface OptionOps<A> {
    */
   orElse(alternative: () => Option<A>): Option<A>
 
+  /**
+   * Returns this Option's value if it's a Some, else return the provided alternative
+   */
+  getOrElse(alternative: A): Option<A>
+
   toString(): string
 }
 
@@ -105,6 +110,7 @@ function makeNone() {
   self.flatMap = returnNone
   self.filter = returnNone
   self.orElse = (alt: Function) => alt()
+  self.getOrElse = (alt: any) => alt
   self.toString = () => 'None'
   self.toJSON = () => null
 
@@ -121,11 +127,13 @@ function Some<T>(value: T) {
     if (isDef(result)) return Some(result)
     else return None
   }
+
   self.flatMap = (fn: any) => fn(value)
   self.filter = (fn: any) => fn(value) ? self : None
   self.orElse = () => self
+  self.getOrElse = self
   self.toString = () => `Some(${value})`
-  self.toJSON = () => value
+  self.toJSON = self
 
   return self as Some<T>
 }
