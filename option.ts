@@ -1,10 +1,10 @@
 
-export interface OptionOps<A> {
+export interface Option<A> {
   /**
    * Returns the value contained in this Option.
    * This will always return undefined if this Option instance is None.
    */
-  (): A | void
+  (): A | undefined
 
   /**
    * Returns whether this Option has a defined value (i.e, it's a Some(value))
@@ -36,23 +36,22 @@ export interface OptionOps<A> {
   /**
    * Returns this Option's value if it's a Some, else return the provided alternative
    */
-  getOrElse(alternative: A): Option<A>
+  getOrElse(alternative: A): A
 
   toString(): string
 }
 
-export interface Some<T> extends OptionOps<T> {
+export interface Some<T> extends Option<T> {
   _isSome: Some<T> // Nominal interface marker
   (): T
 }
 
-export interface None extends OptionOps<never> {
+export interface None extends Option<never> {
   _isNone: None // Nominal interface marker
-  (): void
+  (): undefined
 }
 
 
-export type Option<T> = Some<T> | None
 export const None = makeNone()
 
 export interface OptionObject {
@@ -60,7 +59,7 @@ export interface OptionObject {
    * Creates an Option from a value.
    * If the value is null or undefined, it will create a None, else a Some.
    */
-  <T>(value: T): Option<T>
+  <T>(value: T | null | undefined): Option<T>
 
   /**
    * Creates a new Option holding the computation of the passed Options if they were all Some or plain defined instances,
@@ -98,13 +97,15 @@ OptionObject.all = (...args: any[]) => {
   return OptionObject(computation.apply(null, values))
 }
 
-export default OptionObject
+export const Option = OptionObject
 
 
 function makeNone() {
   const self: any = () => undefined
 
-  self.isDefined = returnFalse
+  function returnNone() { return None }
+
+  self.isDefined = () => false
   self._isNone = self
   self.map = returnNone
   self.flatMap = returnNone
@@ -119,30 +120,53 @@ function makeNone() {
 
 function Some<T>(value: T) {
   const self: any = () => value
-
-  self.isDefined = returnTrue
+  self.value = value
   self._isSome = self
-  self.map = (fn: any): any => {
-    const result = fn(value)
-    if (isDef(result)) return Some(result)
-    else return None
-  }
 
-  self.flatMap = (fn: any) => fn(value)
-  self.filter = (fn: any) => fn(value) ? self : None
-  self.orElse = () => self
-  self.getOrElse = self
-  self.toString = () => `Some(${value})`
-  self.toJSON = self
+  for (let key in someProto) {
+    self[key] = someProto[key]
+  }
 
   return self as Some<T>
 }
 
+const someProto = {
+
+  isDefined: function() {
+    return true
+  },
+
+  map: function(fn: any): any {
+    const result = fn(this.value)
+    if (isDef(result)) return Some(result)
+    else return None
+  },
+
+  flatMap: function(fn: any) {
+    return fn(this.value)
+  },
+
+  filter: function(fn: any) {
+    return fn(this.value) ? this : None
+  },
+
+  orElse: function() {
+    return this
+  },
+
+  getOrElse: function() {
+    return this()
+  },
+
+  toString: function() {
+    return `Some(${this.value})`
+  },
+
+  toJSON: function() {
+    return this()
+  }
+}
 
 function isDef(value: any) {
   return value !== null && value !== undefined
 }
-
-function returnNone() { return None }
-function returnTrue() { return true }
-function returnFalse() { return false }

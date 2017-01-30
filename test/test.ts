@@ -1,6 +1,5 @@
 const assert = require('better-assert')
-const Option = require('./lib/option').default
-const None = require('./lib/option').None
+import { Option, None } from '../lib/option'
 
 
 suite('option.ts', () => {

@@ -6,12 +6,9 @@
 	},
 	"compileOnSave": false,
 	"atom": {
-		"rewriteTsconfig": true
+		"rewriteTsconfig": false
 	},
 	"filesGlob": [
-		"option.ts"
-	],
-	"files": [
-		"option.ts"
+		"**/*.ts"
 	]
 }

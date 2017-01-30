@@ -1,13 +1,14 @@
 {
   "name": "option.ts",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Option ~Monad for typescript, focus is on simplicity and typesafety",
   "main": "lib/option",
   "typings": "lib/option.d.ts",
 
   "scripts": {
-    "build": "tsc option.ts --outDir ./lib --declaration --noImplicitAny --strictNullChecks",
-    "test": "npm run build && mocha --ui tdd",
+    "build": "tsc option.ts --lib 'es5,es2015.core' --outDir ./lib --declaration --noImplicitAny --strictNullChecks --suppressImplicitAnyIndexErrors",
+    "pretest": "npm run build && tsc test/mocha.d.ts test/global.d.ts test/test.ts --outDir ./test",
+    "test": "mocha test/test.js --ui tdd",
     "prepublish": "npm run build"
   },
 
@@ -16,7 +17,7 @@
   ],
 
   "devDependencies": {
-    "typescript": "beta",
+    "typescript": "2.1.5",
     "mocha": "3.0.2",
     "better-assert": "1.0.1"
   },
