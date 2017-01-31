@@ -9,7 +9,7 @@ export interface Option<A extends {}> {
   /**
    * Returns whether this Option has a defined value (i.e, it's a Some(value))
    */
-  isDefined(): boolean
+  isDefined(): this is Some<A>
 
   /**
    * Maps the value contained in this Some, else returns None.

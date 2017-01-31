@@ -4,6 +4,14 @@ import { Option, None } from '../lib/option'
 
 suite('option.ts', () => {
 
+  // isDefined
+
+  test('isDefined can help refine the type', () => {
+    const value = 33 as (number | undefined)
+    const some = Option(value)
+    some.isDefined() && some().toFixed(10)
+  })
+
   // Factory
 
   test('Creating a Some', () => {
