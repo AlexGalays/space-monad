@@ -1,5 +1,5 @@
 
-export interface Option<A> {
+export interface Option<A extends {}> {
   /**
    * Returns the value contained in this Option.
    * This will always return undefined if this Option instance is None.
@@ -46,7 +46,7 @@ export interface Some<T> extends Option<T> {
   (): T
 }
 
-export interface None extends Option<never> {
+export interface None extends Option<any> {
   _isNone: None // Nominal interface marker
   (): undefined
 }
@@ -60,6 +60,11 @@ export interface OptionObject {
    * If the value is null or undefined, it will create a None, else a Some.
    */
   <T>(value: T | null | undefined): Option<T>
+
+  /**
+   * Returns whether the passed value is an Option (either a Some or a None).
+   */
+  isOption(value: any): value is Option<{}>
 
   /**
    * Creates a new Option holding the computation of the passed Options if they were all Some or plain defined instances,
@@ -96,6 +101,11 @@ OptionObject.all = (...args: any[]) => {
 
   return OptionObject(computation.apply(null, values))
 }
+
+OptionObject.isOption = function(value: any): value is Option<{}> {
+  return (typeof value === 'function') && ('_isSome' in value || '_isNone' in value)
+}
+
 
 export const Option = OptionObject
 

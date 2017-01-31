@@ -44,7 +44,8 @@ suite('option.ts', () => {
   })
 
   test('None.map -> None', () => {
-    const none = Option(undefined).map(x => x * 2)
+    const value = undefined as (number | undefined)
+    const none = Option(value).map(x => x * 2)
     assert(!none.isDefined() && none() === undefined)
   })
 
@@ -103,7 +104,8 @@ suite('option.ts', () => {
   })
 
   test('None getOrElse', () => {
-    const result = Option(undefined).getOrElse(20)
+    const value = undefined as (number | undefined)
+    const result = Option(value).getOrElse(20)
     assert(result === 20)
   })
 
@@ -121,7 +123,8 @@ suite('option.ts', () => {
   })
 
   test('None.orElse Some', () => {
-    const some = Option(undefined).orElse(() => Option(20))
+    const value = undefined as (number | undefined)
+    const some = Option(value).orElse(() => Option(20))
     assert(some.isDefined() && some() === 20)
   })
 
@@ -158,6 +161,18 @@ suite('option.ts', () => {
     assert(!none.isDefined() && none() === undefined)
   })
 
+
+  // Option.isOption
+
+  test('Option.isOption', () => {
+    assert(Option.isOption(true) === false)
+    assert(Option.isOption(false) === false)
+    assert(Option.isOption('') === false)
+    assert(Option.isOption([]) === false)
+    assert(Option.isOption(None) === true)
+    assert(Option.isOption(Option(33)) === true)
+    assert(Option.isOption(Option(undefined)) === true)
+  })
 
   // toString
 
