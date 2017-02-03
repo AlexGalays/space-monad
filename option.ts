@@ -1,5 +1,5 @@
 
-export interface Option<A extends {}> {
+export interface Option<A> {
   /**
    * Returns the value contained in this Option.
    * This will always return undefined if this Option instance is None.
