@@ -1,7 +1,7 @@
 
 /* Interop with space-lift */
 export interface Wrapper<A> {
-  (): A
+  value(): A
 }
 
 export interface Option<A> {
