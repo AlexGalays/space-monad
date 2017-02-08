@@ -1,4 +1,9 @@
 
+/* Interop with space-lift */
+export interface Wrapper<A> {
+  (): A
+}
+
 export interface Option<A> {
   /**
    * Returns the value contained in this Option.
@@ -15,7 +20,7 @@ export interface Option<A> {
    * Maps the value contained in this Some, else returns None.
    * Depending on the map function return value, a Some could be tranformed into a None.
    */
-  map<B>(fn: (a: A) => B): Option<B>
+  map<B>(fn: (a: A) => B | null | undefined | Wrapper<B>): Option<B>
 
   /**
    * Maps the value contained in this Some to a new Option, else returns None.
@@ -147,7 +152,8 @@ const someProto = {
   },
 
   map: function(fn: any): any {
-    const result = fn(this.value)
+    let result = fn(this.value)
+    if (result && result['_isLiftWrapper']) result = result.value()
     if (isDef(result)) return Some(result)
     else return None
   },
