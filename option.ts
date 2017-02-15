@@ -43,6 +43,11 @@ export interface Option<A> {
    */
   getOrElse(alternative: A): A
 
+  /**
+   * Returns the result of calling Some(value) if this is a Some, else returns the result of calling None()
+   */
+  match<B, C>(matcher: { Some: (value: A) => B, None: () => C }): B | C
+
   toString(): string
 }
 
@@ -127,6 +132,7 @@ function makeNone() {
   self.filter = returnNone
   self.orElse = (alt: Function) => alt()
   self.getOrElse = (alt: any) => alt
+  self.match = (matcher: any) => matcher.None()
   self.toString = () => 'None'
   self.toJSON = () => null
 
@@ -171,7 +177,11 @@ const someProto = {
   },
 
   getOrElse: function() {
-    return this()
+    return this.value
+  },
+
+  match: function(matcher: any) {
+    return matcher.Some(this.value)
   },
 
   toString: function() {

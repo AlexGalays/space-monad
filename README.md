@@ -18,7 +18,7 @@ The advantage of only using it there, is that you keep neat, non wrapped JSON st
 * [Reading the Option value](#Reading the Option value)
 * [isDefined](#isDefined)
 * [getOrElse](#getOrElse)
-
+* [match](#match)
 
 
 ### Creating an Option
@@ -137,4 +137,18 @@ Returns this Option's value if it's a Some, else return the provided alternative
 const value = Option(undefined).getOrElse(33)
 
 // value === 33
+```
+
+<a name="match"></a>
+#### match
+
+Returns the result of calling `Some(value)` if this is a Some, else returns the result of calling `None()``
+
+```ts
+const some = Option(10)
+const result = some.match({
+  Some: x => (x * 2).toString(),
+  None: () => 999
+})
+// result === '20'
 ```

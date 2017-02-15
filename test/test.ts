@@ -142,6 +142,36 @@ suite('option.ts', () => {
   })
 
 
+  // match
+
+  test('Some.match', () => {
+    const some = Option(10)
+    const result = some.match({
+      Some: x => (x * 2).toString(),
+      None: () => 999
+    })
+
+    // test the compilation of the returned type: It should be a string | number
+    if (typeof result === 'number') {
+      result.toFixed()
+    }
+    else {
+      result.charCodeAt(0)
+    }
+
+    assert(result === '20')
+  })
+
+  test('None.match', () => {
+    const none = Option(null)
+    const result = none.match({
+      Some: x => (x * 2).toString(),
+      None: () => '999'
+    })
+    assert(result === '999')
+  })
+
+
   // Option.all
 
   test('Option.all - 2 Some args', () => {
