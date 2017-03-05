@@ -1,6 +1,6 @@
 {
   "name": "option.ts",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Option ~Monad for typescript, focus is on simplicity and typesafety",
   "main": "lib/option",
   "typings": "lib/option.d.ts",

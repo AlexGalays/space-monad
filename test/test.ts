@@ -175,28 +175,40 @@ suite('option.ts', () => {
   // Option.all
 
   test('Option.all - 2 Some args', () => {
-    const some = Option.all(Option('a'), Option('b'), (a, b) => a + b)
-    assert(some.isDefined() && some() === 'ab')
+    const some = Option.all(Option('a'), Option('b'))
+    assert(some.isDefined() && some().join(',') === 'a,b')
   })
 
   test('Option.all - 1 Some arg, 1 defined value', () => {
-    const some = Option.all(Option('a'), 'b', (a, b) => a + b)
-    assert(some.isDefined() && some() === 'ab')
+    const some = Option.all(Option('a'), 'b')
+    assert(some.isDefined() && some().join(',') === 'a,b')
   })
 
   test('Option.all - 3 Some args', () => {
-    const some = Option.all(Option('a'), Option('b'), Option('c'), (a, b, c) => a + b + c)
-    assert(some.isDefined() && some() === 'abc')
+    const some = Option.all(Option('a'), Option('b'), Option('c'))
+    assert(some.isDefined() && some().join(',') === 'a,b,c')
   })
 
   test('Option.all - 1 Some arg, 1 None arg', () => {
-    const none = Option.all(Option('a'), Option(undefined), (a, b) => a + b)
+    const none = Option.all(Option('a'), Option(undefined))
     assert(!none.isDefined() && none() === undefined)
   })
 
   test('Option.all - 1 Some arg, 1 undefined arg', () => {
-    const none = Option.all(Option('a'), undefined, (a, b) => a + b)
+    const none = Option.all(Option('a'), undefined)
     assert(!none.isDefined() && none() === undefined)
+  })
+
+  test('Option.all - values in the result tuple are refined to be non nullable', () => {
+    const nullableString = 'a' as string | null | undefined
+
+    Option.all(Option(nullableString), undefined, nullableString).map(([a, b, c]) => {
+      // Just testing the compilation here
+      a.charCodeAt(10)
+      c.charCodeAt(10)
+
+      return 0
+    })
   })
 
 
