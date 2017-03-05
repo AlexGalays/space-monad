@@ -64,6 +64,9 @@ export interface None extends Option<any> {
 
 export const None = makeNone()
 
+
+export type NullableValue<T> = T | Option<T> | null | undefined
+
 export interface OptionObject {
   /**
    * Creates an Option from a value.
@@ -77,17 +80,13 @@ export interface OptionObject {
   isOption(value: any): value is Option<{}>
 
   /**
-   * Creates a new Option holding the computation of the passed Options if they were all Some or plain defined instances,
+   * Creates a new Option holding the tuple of all the passed values if they were all Some or non null/undefined values,
    * else returns None
    */
-  all<T1, T2, TR>(t1: T1 | Option<T1>, t2: T2 | Option<T2>,
-    computation: (t1: T1, t2: T2) => TR): Option<TR>
-  all<T1, T2, T3, TR>(t1: T1 | Option<T1>, t2: T2 | Option<T2>, t3: T3 | Option<T3>,
-    computation: (t1: T1, t2: T2, t3: T3) => TR): Option<TR>
-  all<T1, T2, T3, T4, TR>(t1: T1 | Option<T1>, t2: T2 | Option<T2>, t3: T3 | Option<T3>, t4: T4 | Option<T4>,
-    computation: (t1: T1, t2: T2, t3: T3, t4: T4) => TR): Option<TR>
-  all<T1, T2, T3, T4, T5, TR>(t1: T1 | Option<T1>, t2: T2 | Option<T2>, t3: T3 | Option<T3>, t4: T4 | Option<T4>, t5: T5 | Option<T5>,
-    computation: (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5) => TR): Option<TR>
+  all<T1, T2>(t1: NullableValue<T1>, t2: NullableValue<T2>): Option<[T1, T2]>
+  all<T1, T2, T3>(t1: NullableValue<T1>, t2: NullableValue<T2>, t3: NullableValue<T3>): Option<[T1, T2, T3]>
+  all<T1, T2, T3, T4>(t1: NullableValue<T1>, t2: NullableValue<T2>, t3: NullableValue<T3>, t4: NullableValue<T4>): Option<[T1, T2, T3, T4]>
+  all<T1, T2, T3, T4, T5>(t1: NullableValue<T1>, t2: NullableValue<T2>, t3: NullableValue<T3>, t4: NullableValue<T4>, t5: NullableValue<T5>): Option<[T1, T2, T3, T4, T5]>
 }
 
 // The Option constructor / static object
@@ -95,21 +94,19 @@ const OptionObject = function OptionObject<T>(value: T): Option<T> {
   return isDef(value) ? Some(value) : None
 } as OptionObject
 
-OptionObject.all = (...args: any[]) => {
+OptionObject.all = (...args: any[]): any => {
   const values: any[] = []
 
-  for (let i = 0; i < args.length - 1; i++) {
+  for (let i = 0; i < args.length; i++) {
     let value = args[i]
     if (value && (value._isSome || value._isNone)) value = value()
     if (!isDef(value)) break
     values.push(value)
   }
 
-  if (values.length !== args.length - 1) return None
+  if (values.length !== args.length) return None
 
-  const computation: Function = args[args.length - 1]
-
-  return OptionObject(computation.apply(null, values))
+  return Option(values)
 }
 
 OptionObject.isOption = function(value: any): value is Option<{}> {

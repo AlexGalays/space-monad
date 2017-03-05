@@ -35,21 +35,24 @@ const none = Option(null) // none === None
 ```
 
 <a name="Option.all"></a>
-#### Option.all(...optionsOrValues, transform)
+#### Option.all(...optionsOrValues)
 
-Creates a new Option holding the computation of the passed Options if they were all Some or plain defined instances,
-else returns None
+Creates a new Option holding the tuple of all the passed values if they were all Some or non null/undefined values,  
+else returns None`
 
 ```ts
 const some = Option.all(
-  Option(10), 20, Option(5),
-  (a, b, c) => a + b + c
+  Option(10),
+  20,
+  Option(5)
 )
-// some === Some(35)
+// some === Some([10, 20, 5])
 
 const none = Option.all(
-  Option(10), None, Option(5),
-  (a, b, c) => a + b + c
+  Option(10),
+  None,
+  Option(5),
+  null
 )
 // none === None
 ```
@@ -126,7 +129,8 @@ const value = Option(33)()
 <a name="isDefined"></a>
 #### isDefined
 
-Returns whether this Option has a defined value (i.e, it's a Some(value))
+Returns whether this Option has a defined value (i.e, it's a Some(value))  
+Note: this refines the type of the Option to be a Some so it's guaranteed its value is not null/undefined.
 
 <a name="getOrElse"></a>
 #### getOrElse
