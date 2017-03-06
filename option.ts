@@ -17,6 +17,11 @@ export interface Option<A> {
   isDefined(): this is Some<A>
 
   /**
+   * Applies the given procedure to the option's value, if it is non empty.
+   */
+  forEach(fn: (a: A) => void): void
+
+  /**
    * Maps the value contained in this Some, else returns None.
    * Depending on the map function return value, a Some could be tranformed into a None.
    */
@@ -124,6 +129,7 @@ function makeNone() {
 
   self.isDefined = () => false
   self._isNone = self
+  self.forEach = () => {}
   self.map = returnNone
   self.flatMap = returnNone
   self.filter = returnNone
@@ -152,6 +158,10 @@ const someProto = {
 
   isDefined: function() {
     return true
+  },
+
+  forEach: function(fn: any) {
+    fn(this.value)
   },
 
   map: function(fn: any): any {

@@ -15,10 +15,11 @@ The advantage of only using it there, is that you keep neat, non wrapped JSON st
 * [flatMap](#flatMap)
 * [filter](#filter)
 * [orElse](#orElse)
+* [match](#match)
 * [Reading the Option value](#Reading the Option value)
 * [isDefined](#isDefined)
 * [getOrElse](#getOrElse)
-* [match](#match)
+* [forEach](#forEach)
 
 
 ### Creating an Option
@@ -74,7 +75,7 @@ import { None } from 'option.ts'
 #### map
 
 Maps the value contained in this Some, else returns None.
-Depending on the map function return value, a Some could be tranformed into a None, as a Some will never contain a null or undefined value.
+Depending on the map function return value, a Some could be tranformed into a None, as a Some should never contain a null or undefined value.
 
 ```ts
 const some = Option(33).map(x => x * 2)
@@ -112,6 +113,19 @@ const some = Option(null).orElse(() => Option(33))
 // some === Some(33)
 ```
 
+<a name="match"></a>
+#### match
+
+Returns the result of calling `Some(value)` if this is a Some, else returns the result of calling `None()``
+
+```ts
+const some = Option(10)
+const result = some.match({
+  Some: x => (x * 2).toString(),
+  None: () => 999
+})
+// result === '20'
+```
 
 ### Misc
 
@@ -119,7 +133,7 @@ const some = Option(null).orElse(() => Option(33))
 #### Accessing the underlying value of the Option
 
 Options are simple functions, call it to access the underlying value.
-`Some` instances return their value, whereas `None` returns `undefined`
+`Some` instances return their value, whereas `None` always return `undefined`
 
 ```ts
 const value = Option(33)()
@@ -143,16 +157,11 @@ const value = Option(undefined).getOrElse(33)
 // value === 33
 ```
 
-<a name="match"></a>
-#### match
+<a name="forEach"></a>
+#### forEach
 
-Returns the result of calling `Some(value)` if this is a Some, else returns the result of calling `None()``
+Applies the given procedure to the option's value, if it is non empty.
 
 ```ts
-const some = Option(10)
-const result = some.match({
-  Some: x => (x * 2).toString(),
-  None: () => 999
-})
-// result === '20'
+Option(33).forEach(x => console.log(x))
 ```

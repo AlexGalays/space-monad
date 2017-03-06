@@ -39,6 +39,21 @@ suite('option.ts', () => {
   })
 
 
+  // forEach
+
+  test('Some.forEach', () => {
+    let state = 0
+    Option(10).forEach(x => state = state + x)
+    assert(state === 10)
+  })
+
+  test('None.forEach', () => {
+    let state = 0
+    Option(null).forEach(x => state = state + x)
+    assert(state === 0)
+  })
+
+
   // map
 
   test('Some.map -> Some', () => {
