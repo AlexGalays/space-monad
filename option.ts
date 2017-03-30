@@ -1,15 +1,11 @@
 
-/* Interop with space-lift */
-export interface Wrapper<A> {
-  value(): A
-}
-
 export interface Option<A> {
   /**
    * Returns the value contained in this Option.
    * This will always return undefined if this Option instance is None.
+   * This method never throws.
    */
-  (): A | undefined
+  get(): A | undefined
 
   /**
    * Returns whether this Option has a defined value (i.e, it's a Some(value))
@@ -57,17 +53,14 @@ export interface Option<A> {
 }
 
 export interface Some<T> extends Option<T> {
-  _isSome: Some<T> // Nominal interface marker
-  (): T
+  _isSome: true // Nominal interface marker
+  get(): T
 }
 
 export interface None extends Option<any> {
-  _isNone: None // Nominal interface marker
-  (): undefined
+  _isNone: true // Nominal interface marker
+  get(): undefined
 }
-
-
-export const None = makeNone()
 
 
 export type NullableValue<T> = T | Option<T> | null | undefined
@@ -94,7 +87,7 @@ export interface OptionObject {
   all<T1, T2, T3, T4, T5>(t1: NullableValue<T1>, t2: NullableValue<T2>, t3: NullableValue<T3>, t4: NullableValue<T4>, t5: NullableValue<T5>): Option<[T1, T2, T3, T4, T5]>
 }
 
-// The Option constructor / static object
+// The Option factory / static object
 const OptionObject = function OptionObject<T>(value: T): Option<T> {
   return isDef(value) ? Some(value) : None
 } as OptionObject
@@ -104,31 +97,26 @@ OptionObject.all = (...args: any[]): any => {
 
   for (let i = 0; i < args.length; i++) {
     let value = args[i]
-    if (value && (value._isSome || value._isNone)) value = value()
+    if (Option.isOption(value)) value = value.get()
     if (!isDef(value)) break
     values.push(value)
   }
 
-  if (values.length !== args.length) return None
-
-  return Option(values)
+  return (values.length === args.length) ? Some(values) : None
 }
 
 OptionObject.isOption = function(value: any): value is Option<{}> {
-  return (typeof value === 'function') && ('_isSome' in value || '_isNone' in value)
+  return !!value && (value._isSome === true || value._isNone === true)
 }
 
-
-export const Option = OptionObject
-
-
 function makeNone() {
-  const self: any = () => undefined
+  const self: any = {}
 
   function returnNone() { return None }
 
+  self._isNone = true
+  self.get = () => undefined
   self.isDefined = () => false
-  self._isNone = self
   self.forEach = () => {}
   self.map = returnNone
   self.flatMap = returnNone
@@ -142,64 +130,77 @@ function makeNone() {
   return self as None
 }
 
-function Some<T>(value: T) {
-  const self: any = () => value
-  self.value = value
-  self._isSome = self
-
-  for (let key in someProto) {
-    self[key] = someProto[key]
-  }
-
-  return self as Some<T>
+function _Some<T>(value: T) {
+  this.value = value
 }
 
-const someProto = {
+_Some.prototype = {
 
-  isDefined: function() {
-    return true
-  },
+  _isSome: true,
 
-  forEach: function(fn: any) {
-    fn(this.value)
-  },
-
-  map: function(fn: any): any {
-    let result = fn(this.value)
-    if (result && result['_isLiftWrapper']) result = result.value()
-    if (isDef(result)) return Some(result)
-    else return None
-  },
-
-  flatMap: function(fn: any) {
-    return fn(this.value)
-  },
-
-  filter: function(fn: any) {
-    return fn(this.value) ? this : None
-  },
-
-  orElse: function() {
-    return this
-  },
-
-  getOrElse: function() {
+  get() {
     return this.value
   },
 
-  match: function(matcher: any) {
+  isDefined() {
+    return true
+  },
+
+  forEach(fn: any) {
+    fn(this.value)
+  },
+
+  map(fn: any): any {
+    let result = fn(this.value)
+    if (result && result['_isLiftWrapper']) result = result.value()
+    return Option(result)
+  },
+
+  flatMap(fn: any) {
+    return fn(this.value)
+  },
+
+  filter(fn: any) {
+    return fn(this.value) ? this : None
+  },
+
+  orElse() {
+    return this
+  },
+
+  getOrElse() {
+    return this.value
+  },
+
+  match(matcher: any) {
     return matcher.Some(this.value)
   },
 
-  toString: function() {
+  toString() {
     return `Some(${this.value})`
   },
 
-  toJSON: function() {
-    return this()
+  toJSON() {
+    return this.value
   }
 }
 
 function isDef(value: any) {
   return value !== null && value !== undefined
 }
+
+
+/* Interop with space-lift */
+export interface Wrapper<A> {
+  value(): A
+}
+
+
+export const Option = OptionObject
+
+/** Creates a new Some instance using a non nullable value */
+export function Some<T extends {}>(value: T): Some<T> {
+  return new (_Some as any)(value)
+}
+
+export const None = makeNone()

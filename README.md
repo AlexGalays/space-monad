@@ -1,7 +1,7 @@
 # option.ts
 Option ~Monad for typescript
 
-`option.ts` can be used with either javascript or typescript 2.0.  
+`option.ts` can be used with either javascript or typescript.  
 This Option wrapper is mostly meant to be used at call sites, where you want to create and transform optional value expressions.
 The advantage of only using it there, is that you keep neat, non wrapped JSON structures as your data.
 
@@ -16,11 +16,20 @@ The advantage of only using it there, is that you keep neat, non wrapped JSON st
 * [filter](#filter)
 * [orElse](#orElse)
 * [match](#match)
-* [Reading the Option value](#Reading the Option value)
 * [isDefined](#isDefined)
+* [get](#Reading the Option value)
 * [getOrElse](#getOrElse)
 * [forEach](#forEach)
 
+
+
+### Importing the library
+
+Here's everything that can be imported from `option.ts`:  
+
+```ts
+import { Option, None, Some } from 'option.ts'
+```
 
 ### Creating an Option
 
@@ -34,6 +43,14 @@ If the value is null or undefined, it will create a None, else a Some.
 const some = Option(33) // some === Some(33)
 const none = Option(null) // none === None
 ```
+
+If you already know the value is defined for sure (not nullable) or not, you can create a `Some` or `None` directly:  
+
+```ts
+const some = Some(33) // Some(null | undefined) wouldn't compile.
+const none = None
+```
+
 
 <a name="Option.all"></a>
 #### Option.all(...optionsOrValues)
@@ -61,8 +78,6 @@ const none = Option.all(
 #### None
 
 The Option constant representing no value.
-Note: `Some` can not be imported as it would result in unsafe Option creations (e.g Some containing null/undefined).
-Instead, use `Option(myValue)`.
 
 ```ts
 import { None } from 'option.ts'
@@ -75,7 +90,7 @@ import { None } from 'option.ts'
 #### map
 
 Maps the value contained in this Some, else returns None.
-Depending on the map function return value, a Some could be tranformed into a None, as a Some should never contain a null or undefined value.
+Depending on the map function return value, a Some could be tranformed into a None, as a Some is guaranteed to never contain a null or undefined value.
 
 ```ts
 const some = Option(33).map(x => x * 2)
@@ -121,7 +136,7 @@ Returns the result of calling `Some(value)` if this is a Some, else returns the 
 ```ts
 const some = Option(10)
 const result = some.match({
-  Some: x => (x * 2).toString(),
+  Some: x  => (x * 2).toString(),
   None: () => 999
 })
 // result === '20'
@@ -130,13 +145,13 @@ const result = some.match({
 ### Misc
 
 <a name="Reading the Option value"></a>
-#### Accessing the underlying value of the Option
+#### get
 
-Options are simple functions, call it to access the underlying value.
-`Some` instances return their value, whereas `None` always return `undefined`
+`Some` instances return their value, whereas `None` always return `undefined`.  
+Thus, this method never throws.
 
 ```ts
-const value = Option(33)()
+const value = Some(33).get()
 // value === 33
 ```
 

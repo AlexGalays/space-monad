@@ -1,6 +1,6 @@
 {
   "name": "option.ts",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Option ~Monad for typescript, focus is on simplicity and typesafety",
   "main": "lib/option",
   "typings": "lib/option.d.ts",
@@ -17,7 +17,7 @@
   ],
 
   "devDependencies": {
-    "typescript": "2.1.5",
+    "typescript": "2.2.2",
     "mocha": "3.0.2",
     "better-assert": "1.0.1"
   },
