@@ -1,3 +1,6 @@
+# :warning: This repo has been moved to [space-lift](https://github.com/AlexGalays/spacelift#option)  :warning:
+You can continue to use Option exclusively by importing it with `import { Option, Some, None } from 'space-lift/option`
+
 # option.ts
 Option ~Monad for typescript
 
