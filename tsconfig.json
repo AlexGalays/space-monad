@@ -1,14 +1,17 @@
 {
 	"compilerOptions": {
-		"target": "es5",
-		"noImplicitAny": true,
-		"strictNullChecks": true
+		"target": "ES2015",
+		"strict": true,
+		"baseUrl": "src",
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"lib": [
+			"dom",
+			"es5",
+			"es2015.core",
+			"es2015.iterable"
+		]
 	},
 	"compileOnSave": false,
-	"atom": {
-		"rewriteTsconfig": false
-	},
-	"filesGlob": [
-		"**/*.ts"
-	]
+	"include": ["src/*", "test/*"],
 }

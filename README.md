@@ -1,38 +1,27 @@
-# :warning: This repo has been moved to [space-lift](https://github.com/AlexGalays/spacelift#option)  :warning:
-You can continue to use Option exclusively by importing it with `import { Option, Some, None } from 'space-lift/option`
+# Space-monad
 
-# option.ts
-Option ~Monad for typescript
+`Option` and `Result` monads for TypeScript.
 
-`option.ts` can be used with either javascript or typescript.  
-This Option wrapper is mostly meant to be used at call sites, where you want to create and transform optional value expressions.
-The advantage of only using it there, is that you keep neat, non wrapped JSON structures as your data.
-
-
-## API
+<a name="api.option"></a>
+## Option
 
 * [Option()](#Option())
 * [Option.all()](#Option.all)
-* [None](#None)
-* [map](#map)
-* [flatMap](#flatMap)
-* [filter](#filter)
-* [orElse](#orElse)
-* [match](#match)
-* [isDefined](#isDefined)
-* [get](#Reading the Option value)
-* [getOrElse](#getOrElse)
-* [forEach](#forEach)
+* [Option.isOption](#Option.isOption)
+* [None](#option.None)
+* [map](#option.map)
+* [flatMap](#option.flatMap)
+* [filter](#option.filter)
+* [fold](#option.fold)
+* [orElse](#option.orElse)
+* [isDefined](#option.isDefined)
+* [get](#option.get)
+* [getOrElse](#option.getOrElse)
+* [forEach](#option.forEach)
+* [contains](#option.contains)
+* [exists](#option.exists)
+* [toArray](#option.toArray)
 
-
-
-### Importing the library
-
-Here's everything that can be imported from `option.ts`:  
-
-```ts
-import { Option, None, Some } from 'option.ts'
-```
 
 ### Creating an Option
 
@@ -47,7 +36,7 @@ const some = Option(33) // some === Some(33)
 const none = Option(null) // none === None
 ```
 
-If you already know the value is defined for sure (not nullable) or not, you can create a `Some` or `None` directly:  
+If you already know the value is defined for sure (not nullable) or not, you can create a `Some` or `None` directly:
 
 ```ts
 const some = Some(33) // Some(null | undefined) wouldn't compile.
@@ -56,40 +45,52 @@ const none = None
 
 
 <a name="Option.all"></a>
-#### Option.all(...optionsOrValues)
+#### Option.all([...optionsOrValues])
 
-Creates a new Option holding the tuple of all the passed values if they were all Some or non null/undefined values,  
+Creates a new Option holding the tuple of all the values contained in the passed array if they were all Some or non null/undefined values,
 else returns None
 
 ```ts
-const some = Option.all(
+const some = Option.all([
   Option(10),
   20,
   Option(5)
-)
+])
 // some === Some([10, 20, 5])
 
-const none = Option.all(
+const none = Option.all([
   Option(10),
   None,
   Option(5),
   null
-)
+])
 // none === None
 ```
-<a name="None"></a>
+
+<a name="Option.isOption"></a>
+#### Option.isOption
+
+Returns whether the passed instance in an Option, and refines its type
+
+```ts
+import { Option, Some } from 'space-monad'
+Option.isOption(Some(33)) // true
+```
+
+
+<a name="option.None"></a>
 #### None
 
 The Option constant representing no value.
 
 ```ts
-import { None } from 'option.ts'
+import { None } from 'space-monad'
 ```
 
 
 ### Transforming an Option
 
-<a name="map"></a>
+<a name="option.map"></a>
 #### map
 
 Maps the value contained in this Some, else returns None.
@@ -100,7 +101,7 @@ const some = Option(33).map(x => x * 2)
 // some === Some(66)
 ```
 
-<a name="flatMap"></a>
+<a name="option.flatMap"></a>
 #### flatMap
 
 Maps the value contained in this Some to a new Option, else returns None.
@@ -110,7 +111,7 @@ const some = Option(33).flatMap(_ => Option(44))
 // some === Some(44)
 ```
 
-<a name="filter"></a>
+<a name="option.filter"></a>
 #### filter
 
 If this Option is a Some and the predicate returns true, keep that Some.
@@ -121,7 +122,26 @@ const some = Option(33).filter(x => x > 32)
 // some === Some(33)
 ```
 
-<a name="orElse"></a>
+<a name="option.fold"></a>
+#### fold
+
+Applies the first function if this is a None, else applies the second function.
+Note: Since this method creates 2 functions everytime it runs, don't use in tight loops; use isDefined() instead.
+
+```ts
+const count = Option(10).fold(
+  () => 100, // None
+  count => count * 10 // Some
+)
+```
+
+<a name="option.toArray"></a>
+#### toArray
+
+Transforms this option into an Array or either 1 or 0 element.
+
+
+<a name="option.orElse"></a>
 #### orElse
 
 Returns this Option unless it's a None, in which case the provided alternative is returned.
@@ -131,40 +151,27 @@ const some = Option(null).orElse(() => Option(33))
 // some === Some(33)
 ```
 
-<a name="match"></a>
-#### match
-
-Returns the result of calling `Some(value)` if this is a Some, else returns the result of calling `None()``
-
-```ts
-const some = Option(10)
-const result = some.match({
-  Some: x  => (x * 2).toString(),
-  None: () => 999
-})
-// result === '20'
-```
-
 ### Misc
 
-<a name="Reading the Option value"></a>
+<a name="option.get"></a>
 #### get
 
-`Some` instances return their value, whereas `None` always return `undefined`.  
-Thus, this method never throws.
+`Some` instances return their value, whereas `None` always return `undefined`.
+This method never throws.
 
 ```ts
 const value = Some(33).get()
 // value === 33
 ```
 
-<a name="isDefined"></a>
+<a name="option.isDefined"></a>
 #### isDefined
 
-Returns whether this Option has a defined value (i.e, it's a Some(value))  
+Returns whether this Option has a defined value (i.e, it's a Some(value))
 Note: this refines the type of the Option to be a Some so it's guaranteed its value is not null/undefined.
 
-<a name="getOrElse"></a>
+
+<a name="option.getOrElse"></a>
 #### getOrElse
 
 Returns this Option's value if it's a Some, else return the provided alternative
@@ -175,11 +182,157 @@ const value = Option(undefined).getOrElse(33)
 // value === 33
 ```
 
-<a name="forEach"></a>
+
+<a name="option.forEach"></a>
 #### forEach
 
 Applies the given procedure to the option's value, if it is non empty.
 
 ```ts
 Option(33).forEach(x => console.log(x))
+```
+
+<a name="option.contains"></a>
+#### contains
+
+Returns whether this option is a Some that contain a specific value, using ===
+
+```ts
+Option(30).contains(30) // true
+```
+
+<a name="option.exists"></a>
+#### exists
+
+Returns whether this option is a Some with a value satisfying the predicate.
+
+```ts
+Option(30).exists(n => n > 10) // true
+```
+
+
+
+<a name="api.result"></a>
+## Result
+
+* [Result, Ok, Err](#Result)
+* [Result.isResult](#Result.isResult)
+* [Result.all](#Result.all)
+* [isOk](#result.isOk)
+* [map](#result.map)
+* [mapError](#result.mapError)
+* [flatMap](#result.flatMap)
+* [fold](#result.fold)
+
+
+A `Result` is the result of a computation that may fail. An `Ok` represents a successful computation, while an `Err` represent the error case.
+
+
+<a name="Result"></a>
+### Importing Result
+
+Here's everything that can be imported to use Results:
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+const ok = Ok(10)
+const err = Err('oops')
+```
+
+<a name="Result.isResult"></a>
+### Result.isResult
+
+Returns whether this instance is a Result (either an Ok or a Err) and refines its type
+
+```ts
+import { Result, Ok } from 'space-monad'
+
+Result.isResult(Ok(10)) // true
+```
+
+<a name="Result.all"></a>
+### Result.all
+
+Creates a new Ok Result holding the tuple of all the values contained in the passed array if they were all Ok,
+else returns the first encountered Err.
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+const result = Result.all([
+  Ok(20),
+  Err('nooo'),
+  Ok(200),
+  Err('oops')
+]) // Err('nooo')
+```
+
+
+<a name="result.isOk"></a>
+### isOk
+
+Returns whether this is an instance of Ok
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+Ok(10).isOk() // true
+```
+
+
+<a name="result.map"></a>
+### map
+
+Maps the value contained in this Result if it's an Ok, else propagates the Error.
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+Ok(10).map(x => x * 2) // Ok(20)
+Err(10).map(x => x * 2) // Err(10)
+```
+
+
+<a name="result.mapError"></a>
+### mapError
+
+Maps the Error contained in this Result if it's an Err, else propagates the Ok.
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+Ok(10).mapError(x => x * 2) // Ok(10)
+Err(10).mapError(x => x * 2) // Err(20)
+```
+
+
+<a name="result.flatMap"></a>
+### flatMap
+
+Maps the value contained in this Result with another Result if it's an Ok, else propagates the Error.
+Note: It is allowed to return a Result with a different Error type.
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+Ok(10).flatMap(x => Ok(x * 2)) // Ok(20)
+Ok(10).flatMap(x => Err(x * 2)) // Err(20)
+```
+
+
+<a name="result.fold"></a>
+### fold
+
+Applies the first function if this is an Err, else applies the second function.
+Note: Don't use in tight loops; use isOk() instead.
+
+
+```ts
+import { Result, Ok, Err } from 'space-monad'
+
+Ok(10).fold(
+  err => console.error(err),
+  num => num * 2
+) // 20
 ```
