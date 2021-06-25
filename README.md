@@ -336,3 +336,135 @@ Ok(10).fold(
   num => num * 2
 ) // 20
 ```
+
+
+
+<a name="api.result"></a>
+## OneMany
+
+* [OneMany, One, Many](#OneMany)
+* [OneMany.isOneMany](#OneMany.isOneMany)
+* [OneMany.all](#OneMany.all)
+* [isOne](#result.isOne)
+* [map](#result.map)
+* [mapMany](#result.mapMany)
+* [flatMap](#result.flatMap)
+* [fold](#result.fold)
+
+
+A `OneMany` is the result of a computation that may yield a single or multiple instances of an entity.
+
+
+<a name="OneMany"></a>
+### Importing OneMany
+
+Here's everything that can be imported to use OneManys:
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+const one = One(10)
+const many = Many([10, 20, 30])
+```
+
+<a name="OneMany.isOneMany"></a>
+### OneMany.isOneMany
+
+Returns whether this instance is a OneMany (either an One or a Many) and refines its type
+
+```ts
+import { OneMany, One } from 'space-monad'
+
+OneMany.isOneMany(One(10)) // true
+```
+
+<a name="OneMany.all"></a>
+### OneMany.all
+
+Creates a new One OneMany holding the tuple of all the values contained in the passed array if they were all One,
+else returns the first encountered Many.
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+const result = OneMany.all([
+  One(20),
+  Many([10, 20, 30]),
+  One(200),
+  Many([40, 50, 60])
+]) // Many([10, 20, 30]),
+```
+
+
+<a name="result.isOne"></a>
+### isOne
+
+Returns whether this is an instance of One
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+One(10).isOne() // true
+```
+
+
+<a name="result.map"></a>
+### map
+
+If OneMany is a One, maps it content, else propagates the Many.
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+One(10).map(x => x * 2) // One(20)
+Many([10, 20, 30]).map(x => x * 2) // Many([10, 20, 30])
+```
+
+
+<a name="result.mapMany"></a>
+### mapMany
+
+If OneMany is a Many, maps it content, else propagates the One.
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+One(10).mapMany(x => x * 2) // One(10)
+Many([10, 20, 30]).mapMany(x => x * 2) // Many([20, 40, 60])
+```
+
+
+<a name="result.flatMap"></a>
+### flatMap
+
+Maps the value contained in this OneMany with another OneMany; if it's a One it propagates a One, otherwise a Many;
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+One(10).flatMap(x => One(x * 2)) // One(20)
+Many([10, 20, 30]).flatMap(x => Many(x * 2)) // Many([20, 40, 60])
+```
+
+
+<a name="result.fold"></a>
+### fold
+
+Applies the first function if this is an Many, else applies the second function.
+Note: Don't use in tight loops; use isOne() instead.
+
+
+```ts
+import { OneMany, One, Many } from 'space-monad'
+
+One(10).fold(
+  many => console.error(JSON.stringfy(many)),
+  num => num * 2
+) // 20
+
+
+Many([10, 20, 30]).fold(
+  many => console.error(JSON.stringfy(many)),
+  num => num * 2
+) // 10, 20, 30
+```
