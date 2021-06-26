@@ -341,6 +341,39 @@ Ok(10).fold(
 
 <a name="api.result"></a>
 ## OneMany
+I wrote the `OneMany` monad to work in conjunction with the `Result` monad, found in the npm [space-monad package](https://www.npmjs.com/package/space-monad#Result) package. 
+
+I use the `Result` monad to capture the results of `CRUD` operations:
+````ts
+export type ResultOk = {
+	code: number, // a REST/HTTP status code (200 series)
+	payload: TBD // element or an element collection
+}
+````
+
+````ts
+export type CrudError = {
+	code: number,
+	content: string
+}
+````
+
+````ts
+export type CrudResult = Result<CrudError, ResultOk>;
+````
+
+In the above example, `ResultOk.payload` can be a single or multiple instances of an entity
+* to hold the results of a CRUD  operation to create a single entity, `create(entity: Entity): Entity`, `ResultOk.payload` must represent a `single Entity`; 
+* to hold the results of CRUD operations to read all entities, `read(): Entity[]`, `ResultOk.payload` must  represent an `Entity collection`.
+
+The `OneMany` monad comes to the rescue, enabling us to rewrite `ResultOk`:
+````ts
+export type ResultOk = {
+	code: number, // a REST/HTTP status code (200 series)
+	payload: OneMany // element or an element collection
+}
+````
+
 
 * [OneMany, One, Many](#OneMany)
 * [OneMany.isOneMany](#OneMany.isOneMany)
@@ -350,10 +383,6 @@ Ok(10).fold(
 * [mapMany](#result.mapMany)
 * [flatMap](#result.flatMap)
 * [fold](#result.fold)
-
-
-A `OneMany` is the result of a computation that may yield a single or multiple instances of an entity.
-
 
 <a name="OneMany"></a>
 ### Importing OneMany
@@ -370,7 +399,7 @@ const many = Many([10, 20, 30])
 <a name="OneMany.isOneMany"></a>
 ### OneMany.isOneMany
 
-Returns whether this instance is a OneMany (either an One or a Many) and refines its type
+Returns whether this instance is a OneMany (either an One or a Many).
 
 ```ts
 import { OneMany, One } from 'space-monad'

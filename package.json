@@ -1,7 +1,7 @@
 {
   "name": "space-monad",
-  "version": "1.0.0",
-  "description": "Option and Result ~Monad for typescript, focus is on simplicity and typesafety",
+  "version": "1.1.0",
+  "description": "Option, Result, and OneMany ~Monad for typescript, focus is on simplicity and typesafety",
   "main": "lib/index",
   "typings": "lib/index.d.ts",
 
